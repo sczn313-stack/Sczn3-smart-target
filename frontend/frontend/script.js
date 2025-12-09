@@ -5,7 +5,7 @@ const form = document.getElementById("sczn3-form");
 const resultBox = document.getElementById("result");
 const resultText = document.getElementById("resultText");
 const resultJson = document.getElementById("resultJson");
-const submitBtn = document.getElementById("submitBtn");
+const submitBtn = document.getElementById("submit to");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
