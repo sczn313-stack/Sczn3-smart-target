@@ -1,1 +1,80 @@
-index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SCZN3 Zeroing Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0 16px 0;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: black;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background: gray;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+        #resultJson {
+            white-space: pre-wrap;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SCZN3 Zeroing Calculator</h1>
+
+    <form id="sczn3-form">
+        <label>Distance (yards):</label>
+        <input type="number" id="distanceYards" placeholder="e.g. 25" required />
+
+        <label>Click Value (MOA):</label>
+        <input type="number" id="clickValueMOA" placeholder="e.g. 0.25" required />
+
+        <label>Offset Right (inches):</label>
+        <input type="number" id="offsetRightInches" placeholder="Right = + / Left = -" required />
+
+        <label>Offset Up (inches):</label>
+        <input type="number" id="offsetUpInches" placeholder="Up = + / Down = -" required />
+
+        <button id="submitBtn" type="submit">Compute</button>
+    </form>
+
+    <div id="result">
+        <h3>Results</h3>
+        <p id="resultText"></p>
+        <pre id="resultJson"></pre>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
