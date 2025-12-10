@@ -1,80 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SCZN3 Zeroing Tool</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        h1 {
-            text-align: center;
-        }
-        label {
-            font-weight: bold;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            margin: 6px 0 16px 0;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: black;
-            color: white;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:disabled {
-            background: gray;
-        }
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            display: none;
-        }
-        #resultJson {
-            white-space: pre-wrap;
-            font-size: 12px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>SCZN3 — Shooter Experience Card (SEC)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
-<body>
+<body style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f5f5f5; margin:0; padding:0;">
 
-    <h1>SCZN3 Zeroing Calculator</h1>
+  <main style="max-width: 800px; margin: 0 auto; padding: 24px;">
+    <h1 style="text-align:center; margin-bottom: 8px;">
+      SCZN3 Smart Target — SEC Engine
+    </h1>
+    <p style="text-align:center; margin-top:0; margin-bottom:24px; color:#555;">
+      Upload your target image to generate a Shooter Experience Card (SEC).
+    </p>
 
-    <form id="sczn3-form">
-        <label>Distance (yards):</label>
-        <input type="number" id="distanceYards" placeholder="e.g. 25" required />
+    <!-- Upload Form -->
+    <section style="background:#ffffff; padding:18px 18px 24px; border-radius:4px; border:1px solid #e0e0e0; margin-bottom:24px;">
+      <form id="uploadForm">
+        <label for="targetUpload" style="display:block; margin-bottom:8px; font-weight:600;">
+          Target Image
+        </label>
+        <input
+          type="file"
+          id="targetUpload"
+          accept="image/*"
+          style="display:block; margin-bottom:12px; width:100%;"
+        />
+        <button
+          type="submit"
+          style="padding:10px 18px; border:none; background:#111; color:#fff; font-weight:600; cursor:pointer; border-radius:4px;"
+        >
+          Generate SEC
+        </button>
+      </form>
+      <p id="uploadStatus" style="margin-top:12px; color:#555;"></p>
+    </section>
 
-        <label>Click Value (MOA):</label>
-        <input type="number" id="clickValueMOA" placeholder="e.g. 0.25" required />
+    <!-- SEC Output (same page) -->
+    <section id="secContainer" style="margin-top:16px;"></section>
 
-        <label>Offset Right (inches):</label>
-        <input type="number" id="offsetRightInches" placeholder="Right = + / Left = -" required />
+    <!-- Link to standalone SEC page demo -->
+    <section style="margin-top:32px; text-align:center; font-size:14px; color:#777;">
+      <p>Developer demo:</p>
+      <p>
+        <a href="sec.html?w=2.75&e=1.50&idx=1">
+          View a standalone SEC example (sec.html)
+        </a>
+      </p>
+    </section>
+  </main>
 
-        <label>Offset Up (inches):</label>
-        <input type="number" id="offsetUpInches" placeholder="Up = + / Down = -" required />
-
-        <button id="submitBtn" type="submit">Compute</button>
-    </form>
-
-    <div id="result">
-        <h3>Results</h3>
-        <p id="resultText"></p>
-        <pre id="resultJson"></pre>
-    </div>
-
-    <script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
 </html>
