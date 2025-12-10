@@ -1,46 +1,116 @@
-const form = document.getElementById("sczn3-form");
-const resultBox = document.getElementById("result");
-const resultText = document.getElementById("resultText");
-const resultJson = document.getElementById("resultJson");
-const submitBtn = document.getElementById("submitBtn");
+// SCZN3 SEC Engine (Shooter Experience Card)
 
-const BACKEND_URL = "https://YOUR-BACKEND.onrender.com";
+// Utility: format number to two decimals as a string
+function toTwoDecimals(value) {
+  const num = Number(value);
+  if (isNaN(num)) return "0.00";
+  return num.toFixed(2);
+}
 
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+// Core SEC render function
+function renderSEC(containerId, data) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
 
-    const distanceYards = Number(document.getElementById("distanceYards").value);
-    const clickValueMOA = Number(document.getElementById("clickValueMOA").value);
-    const offsetRightInches = Number(document.getElementById("offsetRightInches").value);
-    const offsetUpInches = Number(document.getElementById("offsetUpInches").value);
+  const wind = toTwoDecimals(data.windage_clicks);
+  const elev = toTwoDecimals(data.elevation_clicks);
+  const index = data.sec_index || "SEC-001";
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Computing…";
+  container.innerHTML = `
+    <div style="max-width: 420px; margin: 0 auto; padding: 24px; border: 1px solid #eee; background:#ffffff;">
+      <h2 style="text-align:center; margin-top:0; margin-bottom:18px; font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+        SCZN3 Shooter Experience Card (SEC)
+      </h2>
+      <div style="text-align:center; margin: 30px 0; font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size:20px; line-height:1.6;">
+        <div>Windage: <strong>${wind} clicks</strong></div>
+        <div>Elevation: <strong>${elev} clicks</strong></div>
+      </div>
+      <div style="text-align:center; font-style:italic; color:#555; font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+        ${index}
+      </div>
+    </div>
+  `;
+}
 
-    try {
-        const res = await fetch(`${BACKEND_URL}/api/score`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                distanceYards,
-                clickValueMOA,
-                offsetRightInches,
-                offsetUpInches,
-            }),
-        });
+// --- INDEX PAGE LOGIC (single-page flow) ---
 
-        const data = await res.json();
+// Fake "processing" → SEC demo for now
+function handleUploadSubmit(event) {
+  event.preventDefault();
 
-        resultText.textContent = `Right: ${data.windageClicks} clicks | Up: ${data.elevationClicks} clicks`;
-        resultJson.textContent = JSON.stringify(data, null, 2);
-        resultBox.style.display = "block";
+  const fileInput = document.getElementById("targetUpload");
+  const file = fileInput && fileInput.files[0];
 
-    } catch (err) {
-        console.error(err);
-        resultText.textContent = "Error communicating with backend.";
-        resultBox.style.display = "block";
+  const statusEl = document.getElementById("uploadStatus");
+  const secContainer = document.getElementById("secContainer");
+
+  if (!file) {
+    if (statusEl) statusEl.textContent = "Please select a target image first.";
+    return;
+  }
+
+  // Show simple status while we "process"
+  if (statusEl) statusEl.textContent = "Processing your target and generating SEC…";
+
+  // For now this is a demo: we simulate computed values.
+  // Later this will call the backend (UGEO + POIB + clicks).
+  setTimeout(() => {
+    if (statusEl) statusEl.textContent = "Done. SEC generated below.";
+
+    const demoData = {
+      windage_clicks: "2.75",
+      elevation_clicks: "1.50",
+      sec_index: "SEC-001"
+    };
+
+    if (secContainer) {
+      renderSEC("secContainer", demoData);
+      secContainer.scrollIntoView({ behavior: "smooth" });
     }
+  }, 1000);
+}
 
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Compute SCZN3 Corrections";
-}); 
+// --- SEC PAGE LOGIC (sec.html) ---
+
+// Parse query params like ?w=2.75&e=1.50&idx=007
+function getQueryParams() {
+  const params = {};
+  const search = window.location.search.substring(1);
+  if (!search) return params;
+
+  search.split("&").forEach(pair => {
+    const [key, value] = pair.split("=");
+    if (!key) return;
+    params[decodeURIComponent(key)] = decodeURIComponent(value || "");
+  });
+
+  return params;
+}
+
+function initSecFromQuery() {
+  const params = getQueryParams();
+  const wind = params.w || "0.00";
+  const elev = params.e || "0.00";
+  const idxRaw = params.idx || "001";
+
+  const data = {
+    windage_clicks: wind,
+    elevation_clicks: elev,
+    sec_index: `SEC-${idxRaw.padStart(3, "0")}`
+  };
+
+  renderSEC("secStandaloneContainer", data);
+}
+
+// Auto-wire events depending on which page we're on
+document.addEventListener("DOMContentLoaded", () => {
+  const uploadForm = document.getElementById("uploadForm");
+  if (uploadForm) {
+    uploadForm.addEventListener("submit", handleUploadSubmit);
+  }
+
+  const secStandalone = document.getElementById("secStandaloneContainer");
+  if (secStandalone) {
+    initSecFromQuery();
+  }
+});
